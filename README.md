@@ -2,34 +2,47 @@
 
 Automated Python pipeline that turns monthly partner **"datagrid"** exports into a single, interactive performance report — replacing a manual, multi-spreadsheet process.
 
-## Overview
+> _Synthetic-data demo — the real pipeline runs on confidential partner data which is **not** included here. Everything below runs on randomly generated sample data._
 
-Every month the business receives large Excel exports containing per-merchant earnings. This pipeline:
+## What it does
 
-- **Auto-detects** any new monthly datagrid file dropped into the working folder
-- **Computes** residual, turnover, and volume metrics per merchant
-- **Compiles** every month into a single tidy time-series dataset
-- **Generates** a self-contained interactive HTML report (charts render offline)
+Each month the business receives large Excel exports of per-merchant earnings. This pipeline auto-detects new files, computes **residual / turnover / volume** per partner, compiles a tidy time-series, and produces an interactive HTML report with a rolling **baseline-vs-recent** comparison and automatic **riser / faller** detection.
 
-## Key Features
+## Total monthly residual
 
-- **Incremental & cached** — each month's large spreadsheet is parsed once and cached, so re-runs are fast
-- **Rolling comparison window** — automatically compares a recent period against a baseline period and flags risers vs fallers
-- **Scales** to 200+ partners across 13+ months
-- **Zero-config monthly run** — drop in the new file, run one command
+![Total monthly residual](assets/residual_trend.svg)
 
-## Tech Stack
+## Biggest movers — baseline vs recent
 
-`Python` · `pandas` · `openpyxl` · `Chart.js` · `HTML`
+![Biggest risers and fallers](assets/top_movers.svg)
 
-## How It Works (high level)
+## How it works
 
-1. Discover input files matching `Datagrid-<Month> <Year>.xlsx`
-2. Parse and normalise the earnings columns into per-merchant monthly residuals
-3. Append to a compiled time-series dataset, caching already-parsed months
-4. Build comparison windows (baseline vs recent) and rank the biggest movers
-5. Render an interactive HTML dashboard with charts
+1. Discover monthly `Datagrid-<Month>.xlsx` files.
+2. Normalise the earnings column into per-merchant monthly residuals.
+3. Compile into one tidy time-series (cached so re-runs are fast).
+4. Compare a recent window against a baseline window and rank the biggest movers.
+5. Render `Partner_Report.html` with KPI cards, charts and a movers table.
+
+## Run it
+
+```bash
+pip install -r requirements.txt
+python build_partner_report.py
+```
+
+This regenerates the two SVG charts above plus a self-contained `Partner_Report.html`.
+
+## Sample results (synthetic)
+
+- **30 partners** tracked across **13 months**
+- Top riser ≈ **+£2.5k / month**, top faller ≈ **−£1.8k / month**
+- Rolling 4-month baseline vs 4-month recent comparison window
+
+## Tech
+
+`Python` · `pandas` · `openpyxl` · dependency-free SVG charting
 
 ---
 
-> **Note:** This is a portfolio summary. The production code and all underlying data are confidential and are not included in this repository.
+_Portfolio demo. No confidential information is included — every figure is randomly generated._
